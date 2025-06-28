@@ -26,6 +26,16 @@ LOGGING_CONFIG = {
             "propagate": False,
         },
     },
+    "faststream": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+        "propagate": False,
+    },
+    "aio_pika": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+        "propagate": False,
+    },
 }
 
 def setup_logging():

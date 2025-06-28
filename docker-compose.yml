@@ -5,3 +5,9 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672" 
+  app:
+    build: .
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
