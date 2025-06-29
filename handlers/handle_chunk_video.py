@@ -1,21 +1,33 @@
-from faststream.rabbit import RabbitQueue, RabbitExchange, ExchangeType
-from rabbit import service_exchange
-from processors.process_chunk_video import process_chunk_video
-from rabbit import broker
+import json
+from json import JSONDecodeError
+from pydantic import ValidationError
 from faststream import Logger
-from models.chunk_video_mobels import ChunkVideoRequest, ChunkVideoResponse
+from processors.process_chunk_video import process_chunk_video
+from models.chunk_video_models import ChunkVideoRequest, ChunkVideoResponse
+from rabbit.broker import broker
+from rabbit.queues import chuck_video_request_queue, chuck_video_response_queue, publish_video_response_queue
+from rabbit.exchanges import video_processor_service_exchange, video_publisher_service_exchange 
 
-api_name = "chunk_video"
+@broker.subscriber(publish_video_response_queue, video_publisher_service_exchange)
+@broker.subscriber(chuck_video_request_queue, video_processor_service_exchange)
+@broker.publisher(chuck_video_response_queue, video_processor_service_exchange)
+async def handle_chunk_video(message: bytes | dict, logger: Logger) -> ChunkVideoResponse:
+    logger.info("Chuck video got request")
 
-request_listener = RabbitQueue(api_name, routing_key=f"{api_name}.request.*")
-#trigger_api_listener = RabbitQueue(api_name, routing_key="trigger_api.response.*")
-#trigger_api_exchange = RabbitExchange("trigger", type=ExchangeType.TOPIC)
+    try:
+        raw_request = message if isinstance(message, dict) else json.loads(message.decode())
+        request = ChunkVideoRequest(**raw_request) 
+        response = await process_chunk_video(request)
+        
+    except (JSONDecodeError, ValidationError) as e:
+        request_id = raw_request.get('request_id', 'unknown') if isinstance(e, ValidationError) else 'unknown'
 
-@broker.subscriber(request_listener, service_exchange)
-#@broker.subscriber(trigger_api_listener, trigger_api_exchange)
-@broker.publisher(routing_key=f"{api_name}.response.*", exchange=service_exchange)
-async def handle_chunk_video(data: ChunkVideoRequest, logger: Logger) -> ChunkVideoResponse:
-    logger.info(f"Starting process {data}")
-    result = await process_chunk_video(data)
-    logger.info(f"Sending response {result}")
-    return result
+        response = ChunkVideoResponse(
+            request_id=request_id,
+            status="error",
+            error_message=str(e)
+        )
+        logger.error(f"[{response.request_id}] Error while parsing/validating request")
+        logger.debug(f"[{response.request_id}] Error: {str(e)}")
+
+    return response

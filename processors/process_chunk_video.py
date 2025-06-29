@@ -1,5 +1,6 @@
-from models.chunk_video_mobels import ChunkVideoRequest, ChunkVideoResponse
+from models.chunk_video_models import ChunkVideoRequest, ChunkVideoResponse
 
-async def process_chunk_video(data: ChunkVideoRequest) -> ChunkVideoResponse:
-    processed = {"request_id": data.request_id, "status": "processed"}
-    return processed
+async def process_chunk_video(request: ChunkVideoRequest) -> ChunkVideoResponse:
+    response = ChunkVideoResponse(request_id=request.request_id, status="processed")
+
+    return response

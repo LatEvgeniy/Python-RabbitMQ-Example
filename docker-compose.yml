@@ -5,7 +5,7 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672" 
-  app:
+  example-app:
     build: .
     depends_on:
       - rabbitmq

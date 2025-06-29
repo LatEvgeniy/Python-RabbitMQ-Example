@@ -9,3 +9,4 @@ class ChunkVideoRequest(BaseModel):
 class ChunkVideoResponse(BaseModel):
     request_id: str
     status: str = Field(default="success")
+    error_message: str | None = None
