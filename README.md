@@ -4,20 +4,20 @@
 
 ```
 python-rabbitmq-example/
-├── **handlers/**              # Обработчики сообщений (подписчики + издатели)
-│   ├── `handle_{api_name}.py`
-├── **processors/**            # Бизнес-логика
-│   └── `process_{api_name}.py`
-├── **models/**                # Pydantic модели для валидации запросов/ответов
-│   └── `{api_name}_models.py`
-├── **rabbit/**                # Конфигурация RabbitMQ (очереди, обмены, брокер)
-│   ├── `broker.py`
-│   ├── `exchanges.py`
-│   └── `queues.py`
-├── **tests/**                 # Юнит-тесты
-│   ├── `handle_{api_name}_test.py`
-│   └── `process_{api_name}_test.py`
-└── `main.py`                  # Точка входа приложения
+├── handlers/              # Обработчики сообщений (подписчики + издатели)
+│   ├── handle_{api_name}.py
+├── processors/            # Бизнес-логика
+│   └── process_{api_name}.py
+├── models/                # Pydantic модели для валидации запросов/ответов
+│   └── {api_name}_models.py
+├── rabbit/                # Конфигурация RabbitMQ (очереди, обмены, брокер)
+│   ├── broker.py
+│   ├── exchanges.py
+│   └── queues.py
+├── tests/                 # Юнит-тесты
+│   ├── handle_{api_name}_test.py
+│   └── process_{api_name}_test.py
+└──main.py                  # Точка входа приложения
 ```
 
 ---
