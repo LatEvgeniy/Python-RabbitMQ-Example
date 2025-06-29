@@ -17,7 +17,10 @@ async def handle_chunk_video(message: bytes | dict, logger: Logger) -> ChunkVide
     try:
         raw_request = message if isinstance(message, dict) else json.loads(message.decode())
         request = ChunkVideoRequest(**raw_request) 
+        logger.info(f"[{request.request_id}] Successfully parsed request: {request}")
+
         response = await process_chunk_video(request)
+        logger.info(f"[{request.request_id}] Successfully processed. Response: {response}")
         
     except (JSONDecodeError, ValidationError) as e:
         request_id = raw_request.get('request_id', 'unknown') if isinstance(e, ValidationError) else 'unknown'
@@ -28,6 +31,6 @@ async def handle_chunk_video(message: bytes | dict, logger: Logger) -> ChunkVide
             error_message=str(e)
         )
         logger.error(f"[{response.request_id}] Error while parsing/validating request")
-        logger.debug(f"[{response.request_id}] Error: {str(e)}")
+        logger.error(f"[{response.request_id}] Error: {str(e)}")
 
     return response

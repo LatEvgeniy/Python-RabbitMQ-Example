@@ -4,7 +4,7 @@ import uuid
 class ChunkVideoRequest(BaseModel):
     request_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     video_url: str
-    chunk_amount: int
+    chunk_amount: int = 5
 
 class ChunkVideoResponse(BaseModel):
     request_id: str
