@@ -16,10 +16,9 @@ async def handle_publish_video(message: bytes | dict, logger: Logger) -> Publish
     try:
         raw_request = message if isinstance(message, dict) else json.loads(message.decode())
         request = PublishVideoRequest(**raw_request) 
-        logger.info(f"[{request.request_id}] Successfully parsed request: {request}")
+        logger.info(f"[{request.request_id}] Parsed request: {request}")
 
         response = await process_publish_video(request)
-        logger.info(f"[{request.request_id}] Successfully processed. Response: {response}")
 
     except (JSONDecodeError, ValidationError) as e:
         request_id = raw_request.get('request_id', 'unknown') if isinstance(e, ValidationError) else 'unknown'
@@ -31,4 +30,5 @@ async def handle_publish_video(message: bytes | dict, logger: Logger) -> Publish
         logger.error(f"[{response.request_id}] Error while parsing/validating request")
         logger.error(f"[{response.request_id}] Error: {str(e)}")
         
+    logger.info(f"[{response.request_id}] Sending response: {response}")
     return response

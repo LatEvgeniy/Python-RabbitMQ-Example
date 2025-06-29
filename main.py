@@ -20,7 +20,8 @@ async def main():
 
     logger.info("Successfully started")
 
-    try:
+    # kind of while True
+    try: 
         await asyncio.Event().wait()
     except (KeyboardInterrupt, asyncio.CancelledError):
         logger.info("Service stopped...")
